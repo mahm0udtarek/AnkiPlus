@@ -21,7 +21,10 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import com.ichi2.anki.CollectionManager.withCol
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class QuizActivity : AppCompatActivity() {
     private data class Q(
@@ -30,6 +33,7 @@ class QuizActivity : AppCompatActivity() {
         val did: Long = 0L,
         val parent: String = "",
         val tags: Set<String> = emptySet(),
+        val qw: Set<String> = emptySet(),
     )
 
     private val accent = Color.parseColor("#0A9AD8")
@@ -46,6 +50,8 @@ class QuizActivity : AppCompatActivity() {
     private var index = 0
     private var score = 0
     private var query = ""
+    private var loadJob: Job? = null
+    private var distMap: Map<Q, List<String>> = emptyMap()
 
     private fun plain(html: String): String = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY).toString().trim()
 
@@ -69,6 +75,7 @@ class QuizActivity : AppCompatActivity() {
             textSize = 22f
             setTextColor(onSurface)
             gravity = Gravity.CENTER
+            textDirection = View.TEXT_DIRECTION_FIRST_STRONG
             setPadding(dp(20), dp(36), dp(20), dp(36))
         }
         questionCard =
@@ -116,7 +123,7 @@ class QuizActivity : AppCompatActivity() {
             optionsBox.removeAllViews()
             optionsBox.addView(button("All decks", true) { start("") })
             decks.forEach { d ->
-                optionsBox.addView(button(d.name, false) { start("deck:\"${d.name}\"") })
+                optionsBox.addView(button(d.name, false) { start("deck:\"${escapeQuery(d.name)}\"") })
             }
         }
     }
@@ -127,7 +134,8 @@ class QuizActivity : AppCompatActivity() {
         score = 0
         title.text = "Loading..."
         optionsBox.removeAllViews()
-        lifecycleScope.launch {
+        loadJob?.cancel()
+        loadJob = lifecycleScope.launch {
             val cards =
                 withCol {
                     val ids = findCards(query).shuffled().take(300)
@@ -138,13 +146,15 @@ class QuizActivity : AppCompatActivity() {
                             val deckName = decks.name(card.did)
                             val f = note.fields
                             val raw = f[0] + f[1]
-                            if (Regex("(?i)<img|<object|<audio|<video|\\[sound|<embed|<br|<div|<p>|<ul|<ol|<table").containsMatchIn(raw)) {
+                            if (raw.contains("{{c") || Regex("(?i)<img|<object|<audio|<video|\\[sound|<embed|<br|<div|<p>|<ul|<ol|<table").containsMatchIn(raw)) {
                                 null
                             } else {
                                 val qq = plain(f[0])
                                 val aa = plain(f[1])
-                                if (qq.contains('\n') || aa.contains('\n') || qq.length > 120 || aa.length > 60 || aa.contains('\uFFFC')) null else Q(qq, aa, card.did, deckName.substringBeforeLast("::", deckName), note.tags.map { it.lowercase() }.toSet())
+                                if (qq.contains('\n') || aa.contains('\n') || qq.length > 120 || aa.length > 60 || aa.contains('\uFFFC')) null else Q(qq, aa, card.did, deckName.substringBeforeLast("::", deckName), note.tags.map { it.lowercase() }.toSet(), words(qq))
                             }
+                        } catch (e: kotlinx.coroutines.CancellationException) {
+                            throw e
                         } catch (e: Exception) {
                             null
                         }
@@ -158,7 +168,19 @@ class QuizActivity : AppCompatActivity() {
                 optionsBox.addView(button("Choose another deck", true) { chooseDeck() })
                 return@launch
             }
-            order = pool.filter { distractors(it).size >= 3 }.shuffled().take(10)
+            val built =
+                withContext(Dispatchers.Default) {
+                    val m = HashMap<Q, List<String>>()
+                    val ord =
+                        pool.shuffled().filter { q ->
+                            val d = distractors(q)
+                            if (d.size >= 3) m[q] = d
+                            d.size >= 3
+                        }.take(10)
+                    ord to m
+                }
+            order = built.first
+            distMap = built.second
             if (order.isEmpty()) {
                 title.text = "Quiz"
                 questionView.text = "Not enough similar cards in this deck to build a quiz."
@@ -170,20 +192,23 @@ class QuizActivity : AppCompatActivity() {
         }
     }
 
-    private fun words(s: String): Set<String> = s.lowercase().split(Regex("[^a-z0-9]+")).filter { it.length > 2 }.toSet()
+    private fun words(s: String): Set<String> = s.lowercase().split(Regex("[^\\p{L}\\p{N}]+")).filter { it.length > 1 }.toSet()
 
-    private fun distractors(q: Q): List<String> {
-        val qw = words(q.question)
-        return pool
+    private fun escapeQuery(name: String): String = name.replace("\\", "\\\\").replace("\"", "\\\"").replace("*", "\\*").replace("_", "\\_")
+
+    private fun distractors(q: Q): List<String> =
+        pool
             .filter { it.answer != q.answer && it.parent == q.parent }
-            .sortedByDescending {
-                words(it.question).intersect(qw).size * 10 +
-                    (if (it.tags.intersect(q.tags).isNotEmpty()) 15 else 0) -
-                    Math.abs(it.answer.length - q.answer.length) / 3 +
-                    (Math.random() * 4).toInt()
-            }.take(3)
-            .map { it.answer }
-    }
+            .map {
+                val score =
+                    it.qw.intersect(q.qw).size * 10 +
+                        (if (it.tags.intersect(q.tags).isNotEmpty()) 15 else 0) -
+                        Math.abs(it.answer.length - q.answer.length) / 3 +
+                        (Math.random() * 4).toInt()
+                it to score
+            }.sortedByDescending { it.second }
+            .take(3)
+            .map { it.first.answer }
 
     private fun show() {
         optionsBox.removeAllViews()
@@ -200,7 +225,7 @@ class QuizActivity : AppCompatActivity() {
         title.text = "Question ${index + 1} of ${order.size}"
         questionView.text = q.question
         resultView.text = ""
-        val options = (distractors(q) + q.answer).shuffled()
+        val options = ((distMap[q] ?: emptyList()) + q.answer).shuffled()
         options.forEach { opt ->
             val b = button(opt, false) { }
             b.setOnClickListener {
@@ -218,6 +243,7 @@ class QuizActivity : AppCompatActivity() {
                     }
                 }
                 b.postDelayed({
+                    if (isFinishing || isDestroyed) return@postDelayed
                     index++
                     show()
                 }, 1100)
@@ -235,6 +261,7 @@ class QuizActivity : AppCompatActivity() {
         return MaterialButton(this).apply {
             this.text = text
             isAllCaps = false
+            textDirection = View.TEXT_DIRECTION_FIRST_STRONG
             textSize = 16f
             cornerRadius = dp(18)
             insetTop = 0
