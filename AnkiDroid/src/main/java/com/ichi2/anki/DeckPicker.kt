@@ -890,6 +890,7 @@ open class DeckPicker :
             val streakShown = if (lastDay == todayDay || lastDay == todayDay - 1 || studiedCount > 0) streakDays else 0
             val streakLine = if (streakShown > 0) "Streak: $streakShown day" + (if (streakShown == 1) "" else "s") + "\n" else ""
             deckPickerBinding.goalHeaderText.text = streakLine + studiedToday
+            deckPickerBinding.goalRing.setProgressCompat(minOf(100, studiedCount * 100 / 20), true)
         }
 
         fun onCollectionStatusChanged(isInInitialState: Boolean) {
