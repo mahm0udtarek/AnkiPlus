@@ -4,4 +4,5 @@
     <color name="ankiplus_stat_blue">#0A9AD8</color>
     <color name="ankiplus_stat_green">#2E9E4F</color>
     <color name="ankiplus_stat_orange">#E0861A</color>
+    <color name="ankiplus_card">#FFFFFF</color>
 </resources>
