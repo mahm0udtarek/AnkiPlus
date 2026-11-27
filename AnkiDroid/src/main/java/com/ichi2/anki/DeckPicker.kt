@@ -890,7 +890,27 @@ open class DeckPicker :
             val streakShown = if (lastDay == todayDay || lastDay == todayDay - 1 || studiedCount > 0) streakDays else 0
             val streakLine = if (streakShown > 0) "Streak: $streakShown day" + (if (streakShown == 1) "" else "s") + "\n" else ""
             deckPickerBinding.goalHeaderText.text = streakLine + studiedToday
-            deckPickerBinding.goalRing.setProgressCompat(minOf(100, studiedCount * 100 / 20), true)
+            val goalCards = streakPrefs.getInt("goal", 20).coerceAtLeast(1)
+            deckPickerBinding.goalRing.setProgressCompat(minOf(100, studiedCount * 100 / goalCards), true)
+            deckPickerBinding.goalHeaderText.text = streakLine + studiedToday + "\nDaily goal: $goalCards cards (long-press to change)"
+            deckPickerBinding.goalHeaderCard.setOnLongClickListener {
+                val input = android.widget.EditText(this@DeckPicker)
+                input.inputType = android.text.InputType.TYPE_CLASS_NUMBER
+                input.setText(goalCards.toString())
+                androidx.appcompat.app.AlertDialog.Builder(this@DeckPicker)
+                    .setTitle("Daily goal (cards)")
+                    .setView(input)
+                    .setPositiveButton("Save") { _, _ ->
+                        val v = input.text.toString().toIntOrNull()
+                        if (v != null && v > 0) {
+                            streakPrefs.edit().putInt("goal", v).apply()
+                            onStudiedTodayChanged(studiedToday)
+                        }
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+                true
+            }
             deckPickerBinding.goalHeaderCard.setOnClickListener { startActivity(android.content.Intent(this@DeckPicker, QuizActivity::class.java)) }
         }
 
