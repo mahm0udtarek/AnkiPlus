@@ -85,7 +85,6 @@ enum class ViewerCommand : MappableAction<ReviewerBinding> {
                         keyCode(KeyEvent.KEYCODE_BUTTON_Y, CardSide.ANSWER),
                         keyCode(KeyEvent.KEYCODE_1, CardSide.ANSWER),
                         keyCode(KeyEvent.KEYCODE_NUMPAD_1, CardSide.ANSWER),
-                        ReviewerBinding.fromGesture(Gesture.SWIPE_LEFT),
                     )
                 ANSWER_HARD ->
                     listOf(
@@ -98,7 +97,6 @@ enum class ViewerCommand : MappableAction<ReviewerBinding> {
                         keyCode(KeyEvent.KEYCODE_BUTTON_B, CardSide.ANSWER),
                         keyCode(KeyEvent.KEYCODE_3, CardSide.ANSWER),
                         keyCode(KeyEvent.KEYCODE_NUMPAD_3, CardSide.ANSWER),
-                        ReviewerBinding.fromGesture(Gesture.SWIPE_RIGHT),
                         keyCode(KeyEvent.KEYCODE_DPAD_CENTER, CardSide.ANSWER),
                         keyCode(KeyEvent.KEYCODE_SPACE, CardSide.ANSWER),
                         keyCode(KeyEvent.KEYCODE_ENTER, CardSide.ANSWER),
