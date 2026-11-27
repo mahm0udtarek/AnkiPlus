@@ -14,7 +14,13 @@
     <FrameLayout
         android:layout_gravity="center"
         android:id="@+id/flashcard"
-        android:layout_margin="0dip"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/reviewer_card_bg"
+        android:clipToOutline="true"
+        android:elevation="6dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
     <FrameLayout
