@@ -853,6 +853,7 @@ abstract class AbstractFlashcardViewer :
         }
     }
 
+    private var swipeAnimating = false
     private var swipeDownX = 0f
     private var swipeDownY = 0f
 
@@ -872,12 +873,20 @@ abstract class AbstractFlashcardViewer :
                     swipeDownX >= loc[0] && swipeDownX <= loc[0] + frame.width &&
                         swipeDownY >= loc[1] && swipeDownY <= loc[1] + frame.height
                 if (startedInCard && Math.abs(dx) > width * 0.25f && Math.abs(dx) > Math.abs(dy) * 2f) {
+                    if (swipeAnimating) return super.dispatchTouchEvent(ev)
+                    swipeAnimating = true
                     val sign = if (dx < 0) -1f else 1f
-                    frame.animate().translationX(sign * width).alpha(0f).setDuration(160).withEndAction {
+                    val rating = if (dx < 0) Rating.AGAIN else Rating.GOOD
+                    frame.animate().translationX(sign * width * 1.1f).rotation(sign * 14f).alpha(0f).setDuration(220).withEndAction {
+                        answerCard(rating)
                         frame.translationX = 0f
-                        frame.alpha = 1f
+                        frame.rotation = 0f
+                        frame.alpha = 0f
+                        frame.animate().alpha(1f).setStartDelay(150).setDuration(220).withEndAction {
+                            frame.animate().setStartDelay(0)
+                            swipeAnimating = false
+                        }.start()
                     }.start()
-                    answerCard(if (dx < 0) Rating.AGAIN else Rating.GOOD)
                 }
             }
         }
