@@ -892,7 +892,8 @@ open class DeckPicker :
             deckPickerBinding.goalHeaderText.text = streakLine + studiedToday
             val goalCards = streakPrefs.getInt("goal", 20).coerceAtLeast(1)
             deckPickerBinding.goalRing.setProgressCompat(minOf(100, studiedCount * 100 / goalCards), true)
-            deckPickerBinding.goalHeaderText.text = streakLine + studiedToday + "\nDaily goal: $goalCards cards (long-press to change)"
+            deckPickerBinding.goalHeaderText.text = streakLine + "$studiedCount cards today"
+            deckPickerBinding.goalRingText.text = "$studiedCount/$goalCards"
             deckPickerBinding.goalHeaderCard.setOnLongClickListener {
                 val input = android.widget.EditText(this@DeckPicker)
                 input.inputType = android.text.InputType.TYPE_CLASS_NUMBER
