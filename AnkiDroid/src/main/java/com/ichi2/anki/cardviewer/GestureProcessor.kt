@@ -40,7 +40,7 @@ class GestureProcessor(
         private set
 
     fun init(preferences: SharedPreferences) {
-        isEnabled = preferences.getBoolean(PREF_KEY, false)
+        isEnabled = true
 
         val associatedCommands = HashMap<Gesture, ViewerCommand>()
         for (command in ViewerCommand.entries) {
