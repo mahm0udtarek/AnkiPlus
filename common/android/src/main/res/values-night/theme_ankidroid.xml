@@ -39,17 +39,17 @@
         <item name="selectedRowBackgroundColor">#393939</item>
         <item name="dynDeckColor">@color/material_light_blue_500</item>
         <!-- Count colors -->
-        <item name="newCountColor">@color/material_indigo_200</item>
+        <item name="newCountColor">#4FC3F7</item>
         <item name="learnCountColor">@color/material_red_200</item>
-        <item name="reviewCountColor">@color/material_green_200</item>
+        <item name="reviewCountColor">#69F0AE</item>
         <item name="buryCountColor">@color/disabled_gray_dark</item>
         <item name="zeroCountColor">@color/zero_count_color</item>
         <!-- Study Screen colors -->
-        <item name="showAnswerButtonBackground">#22333f</item>
-        <item name="againButtonBackground">@color/material_red_800</item>
-        <item name="hardButtonBackground">@color/material_blue_grey_800</item>
-        <item name="goodButtonBackground">@color/material_green_800</item>
-        <item name="easyButtonBackground">@color/material_light_blue_800</item>
+        <item name="showAnswerButtonBackground">#1FB866</item>
+        <item name="againButtonBackground">#4A2523</item>
+        <item name="hardButtonBackground">#4A3517</item>
+        <item name="goodButtonBackground">#12384A</item>
+        <item name="easyButtonBackground">#1F3D1F</item>
         <item name="topBarColor">@color/material_grey_800</item>
         <item name="maxTimerColor">@color/material_red_300</item>
         <item name="colorSurfaceDim">#2a2a2a</item>
