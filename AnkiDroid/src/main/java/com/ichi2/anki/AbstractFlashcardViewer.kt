@@ -856,37 +856,83 @@ abstract class AbstractFlashcardViewer :
     private var swipeAnimating = false
     private var swipeDownX = 0f
     private var swipeDownY = 0f
+    private var swipeStartedInCard = false
+    private var swipeDragging = false
+
+    private fun setSwipeStamps(dx: Float) {
+        val width = resources.displayMetrics.widthPixels.toFloat()
+        val strength = Math.min(1f, Math.abs(dx) / (width * 0.3f))
+        val gotIt = findViewById<View>(R.id.stamp_got_it)
+        val again = findViewById<View>(R.id.stamp_again)
+        gotIt?.translationX = dx
+        again?.translationX = dx
+        gotIt?.alpha = if (dx > 0) strength else 0f
+        again?.alpha = if (dx < 0) strength else 0f
+    }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        val frame = cardFrame
-        if (frame != null) {
-            if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+        val frame = cardFrame ?: return super.dispatchTouchEvent(ev)
+        if (swipeAnimating) return true
+        val width = resources.displayMetrics.widthPixels
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
                 swipeDownX = ev.rawX
                 swipeDownY = ev.rawY
-            } else if (ev.actionMasked == MotionEvent.ACTION_UP && displayAnswer) {
-                val dx = ev.rawX - swipeDownX
-                val dy = ev.rawY - swipeDownY
-                val width = resources.displayMetrics.widthPixels
+                swipeDragging = false
                 val loc = IntArray(2)
                 frame.getLocationOnScreen(loc)
-                val startedInCard =
+                swipeStartedInCard =
                     swipeDownX >= loc[0] && swipeDownX <= loc[0] + frame.width &&
                         swipeDownY >= loc[1] && swipeDownY <= loc[1] + frame.height
-                if (startedInCard && Math.abs(dx) > width * 0.25f && Math.abs(dx) > Math.abs(dy) * 2f) {
-                    if (swipeAnimating) return super.dispatchTouchEvent(ev)
-                    swipeAnimating = true
-                    val sign = if (dx < 0) -1f else 1f
-                    val rating = if (dx < 0) Rating.AGAIN else Rating.GOOD
-                    frame.animate().translationX(sign * width * 1.1f).rotation(sign * 14f).alpha(0f).setDuration(220).withEndAction {
-                        answerCard(rating)
-                        frame.translationX = 0f
-                        frame.rotation = 0f
-                        frame.alpha = 0f
-                        frame.animate().alpha(1f).setStartDelay(150).setDuration(220).withEndAction {
-                            frame.animate().setStartDelay(0)
-                            swipeAnimating = false
-                        }.start()
-                    }.start()
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val dx = ev.rawX - swipeDownX
+                val dy = ev.rawY - swipeDownY
+                if (!swipeDragging && swipeStartedInCard && Math.abs(dx) > 48f && Math.abs(dx) > Math.abs(dy) * 1.5f) {
+                    swipeDragging = true
+                    val cancel = MotionEvent.obtain(ev)
+                    cancel.action = MotionEvent.ACTION_CANCEL
+                    super.dispatchTouchEvent(cancel)
+                    cancel.recycle()
+                }
+                if (swipeDragging) {
+                    frame.translationX = dx
+                    frame.rotation = dx / width * 20f
+                    setSwipeStamps(dx)
+                    return true
+                }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                if (swipeDragging) {
+                    swipeDragging = false
+                    val dx = ev.rawX - swipeDownX
+                    if (ev.actionMasked == MotionEvent.ACTION_UP && Math.abs(dx) > width * 0.3f && displayAnswer) {
+                        swipeAnimating = true
+                        val sign = if (dx < 0) -1f else 1f
+                        val rating = if (dx < 0) Rating.AGAIN else Rating.GOOD
+                        frame.animate().translationX(sign * width * 1.2f).rotation(sign * 24f).alpha(0f).setDuration(380)
+                            .setInterpolator(android.view.animation.DecelerateInterpolator()).withEndAction {
+                                answerCard(rating)
+                                frame.translationX = 0f
+                                frame.rotation = 0f
+                                frame.alpha = 0f
+                                setSwipeStamps(0f)
+                                frame.animate().alpha(1f).setStartDelay(150).setDuration(250).setInterpolator(null).withEndAction {
+                                    frame.animate().setStartDelay(0)
+                                    swipeAnimating = false
+                                }.start()
+                            }.start()
+                        findViewById<View>(R.id.stamp_got_it)?.animate()?.translationX(sign * width * 1.2f)?.alpha(0f)?.setDuration(380)?.start()
+                        findViewById<View>(R.id.stamp_again)?.animate()?.translationX(sign * width * 1.2f)?.alpha(0f)?.setDuration(380)?.start()
+                    } else {
+                        frame.animate().translationX(0f).rotation(0f).setDuration(220)
+                            .setInterpolator(android.view.animation.OvershootInterpolator()).start()
+                        setSwipeStamps(0f)
+                        if (ev.actionMasked == MotionEvent.ACTION_UP && Math.abs(dx) > width * 0.3f && !displayAnswer) {
+                            executeCommand(ViewerCommand.SHOW_ANSWER)
+                        }
+                    }
+                    return true
                 }
             }
         }
