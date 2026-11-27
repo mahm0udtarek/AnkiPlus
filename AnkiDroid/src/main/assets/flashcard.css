@@ -35,16 +35,44 @@ body.ankidroid_dark_mode {
   background-color: transparent;
 }
 
-.card,
-.card div,
-.card p,
-.card li {
+body:has(hr#answer) * {
   text-align: start !important;
   line-height: 1.45;
 }
 
+body:not(:has(hr#answer)) * {
+  text-align: center !important;
+}
+
+body {
+  min-height: 100vh;
+}
+
 #content {
-  padding-bottom: 16px;
+  box-sizing: border-box;
+  padding: 24px;
+  margin: 0;
+}
+
+body:not(:has(hr#answer)) #content {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px !important;
+  line-height: 1.4;
+}
+
+body:has(hr#answer) #content {
+  font-size: 19px;
+}
+
+hr#answer {
+  width: 30%;
+  margin: 18px 0;
+  border: 0;
+  border-top: 2px solid rgba(128, 128, 128, 0.5);
 }
 
 #content {
