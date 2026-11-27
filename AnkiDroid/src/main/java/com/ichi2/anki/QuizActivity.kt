@@ -28,6 +28,8 @@ class QuizActivity : AppCompatActivity() {
         val question: String,
         val answer: String,
         val did: Long = 0L,
+        val parent: String = "",
+        val tags: Set<String> = emptySet(),
     )
 
     private val accent = Color.parseColor("#0A9AD8")
@@ -56,7 +58,7 @@ class QuizActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val surface = themeColor(com.google.android.material.R.attr.colorSurface, Color.WHITE)
+        val surface = androidx.core.content.ContextCompat.getColor(this, R.color.ankiplus_card)
         val onSurface = themeColor(com.google.android.material.R.attr.colorOnSurface, Color.BLACK)
         title = TextView(this).apply {
             textSize = 14f
@@ -95,7 +97,12 @@ class QuizActivity : AppCompatActivity() {
             addView(optionsBox)
             addView(resultView)
         }
-        setContentView(ScrollView(this).apply { addView(root) })
+        setContentView(
+            ScrollView(this).apply {
+                setBackgroundColor(androidx.core.content.ContextCompat.getColor(this@QuizActivity, R.color.ankiplus_bg))
+                addView(root)
+            },
+        )
         chooseDeck()
     }
 
@@ -127,14 +134,16 @@ class QuizActivity : AppCompatActivity() {
                     ids.mapNotNull { id ->
                         try {
                             val card = getCard(id)
-                            val f = getNote(card.nid).fields
+                            val note = getNote(card.nid)
+                            val deckName = decks.name(card.did)
+                            val f = note.fields
                             val raw = f[0] + f[1]
                             if (Regex("(?i)<img|<object|<audio|<video|\\[sound|<embed|<br|<div|<p>|<ul|<ol|<table").containsMatchIn(raw)) {
                                 null
                             } else {
                                 val qq = plain(f[0])
                                 val aa = plain(f[1])
-                                if (qq.contains('\n') || aa.contains('\n') || qq.length > 120 || aa.length > 60 || aa.contains('\uFFFC')) null else Q(qq, aa, card.did)
+                                if (qq.contains('\n') || aa.contains('\n') || qq.length > 120 || aa.length > 60 || aa.contains('\uFFFC')) null else Q(qq, aa, card.did, deckName.substringBeforeLast("::", deckName), note.tags.map { it.lowercase() }.toSet())
                             }
                         } catch (e: Exception) {
                             null
@@ -149,16 +158,31 @@ class QuizActivity : AppCompatActivity() {
                 optionsBox.addView(button("Choose another deck", true) { chooseDeck() })
                 return@launch
             }
-            order = pool.shuffled().take(10)
+            order = pool.filter { distractors(it).size >= 3 }.shuffled().take(10)
+            if (order.isEmpty()) {
+                title.text = "Quiz"
+                questionView.text = "Not enough similar cards in this deck to build a quiz."
+                optionsBox.removeAllViews()
+                optionsBox.addView(button("Choose another deck", true) { chooseDeck() })
+                return@launch
+            }
             show()
         }
     }
 
+    private fun words(s: String): Set<String> = s.lowercase().split(Regex("[^a-z0-9]+")).filter { it.length > 2 }.toSet()
+
     private fun distractors(q: Q): List<String> {
-        val others = pool.filter { it.answer != q.answer }.shuffled()
-        val same = others.filter { it.did == q.did }.sortedBy { Math.abs(it.answer.length - q.answer.length) }
-        val rest = others.filter { it.did != q.did }.sortedBy { Math.abs(it.answer.length - q.answer.length) }
-        return (same + rest).take(3).map { it.answer }
+        val qw = words(q.question)
+        return pool
+            .filter { it.answer != q.answer && it.parent == q.parent }
+            .sortedByDescending {
+                words(it.question).intersect(qw).size * 10 +
+                    (if (it.tags.intersect(q.tags).isNotEmpty()) 15 else 0) -
+                    Math.abs(it.answer.length - q.answer.length) / 3 +
+                    (Math.random() * 4).toInt()
+            }.take(3)
+            .map { it.answer }
     }
 
     private fun show() {
@@ -220,7 +244,7 @@ class QuizActivity : AppCompatActivity() {
                 backgroundTintList = ColorStateList.valueOf(accent)
                 setTextColor(Color.WHITE)
             } else {
-                backgroundTintList = ColorStateList.valueOf(themeColor(com.google.android.material.R.attr.colorSurface, Color.WHITE))
+                backgroundTintList = ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(this@QuizActivity, R.color.ankiplus_card))
                 setTextColor(onSurface)
                 strokeColor = ColorStateList.valueOf(accent)
                 strokeWidth = dp(2)
