@@ -68,6 +68,17 @@
                 app:trackThickness="6dp"
                 app:trackColor="#44FFFFFF"
                 app:indicatorColor="#FFFFFFFF" />
+
+            <TextView
+                android:id="@+id/goal_ring_text"
+                android:layout_width="56dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="18dp"
+                android:gravity="center"
+                android:textColor="#FFFFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
         </com.google.android.material.card.MaterialCardView>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
