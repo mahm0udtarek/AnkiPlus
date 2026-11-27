@@ -3,7 +3,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="DuplicateCrowdInStrings">
     <style name="Base.Theme.AnkiDroid" parent="@style/Theme.Material3.DayNight.NoActionBar">
         <!-- Android colors -->
-        <item name="colorPrimary">@color/material_light_blue_500</item>
+        <item name="colorPrimary">#0A9AD8</item>
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/black</item>
         <item name="colorOnBackground">@color/black</item>
@@ -39,16 +39,16 @@
         <item name="selectedRowBackgroundColor">#ececec</item>
         <item name="dynDeckColor">#2222bb</item>
         <!-- Count colors -->
-        <item name="newCountColor">@color/material_indigo_700</item>
+        <item name="newCountColor">#0A9AD8</item>
         <item name="learnCountColor">@color/material_red_700</item>
-        <item name="reviewCountColor">@color/material_green_800</item>
+        <item name="reviewCountColor">#1FB866</item>
         <item name="buryCountColor">@color/disabled_gray_light</item>
         <item name="zeroCountColor">@color/zero_count_color</item>
         <!-- Study Screen colors -->
-        <item name="againButtonBackground">@color/material_red_700</item>
-        <item name="hardButtonBackground">@color/material_blue_grey_700</item>
-        <item name="goodButtonBackground">@color/material_green_500</item>
-        <item name="easyButtonBackground">@color/material_light_blue_500</item>
+        <item name="againButtonBackground">#FDECEB</item>
+        <item name="hardButtonBackground">#FFF3E3</item>
+        <item name="goodButtonBackground">#E3F4FA</item>
+        <item name="easyButtonBackground">#EAF6E1</item>
         <item name="topBarColor">@color/material_light_blue_100</item>
         <item name="maxTimerColor">@color/material_red_500</item>
         <item name="colorSurfaceDim">#f4f5f9</item>
@@ -62,7 +62,7 @@
         <item name="goodBackgroundColor">#C8E6C9</item>
         <item name="easyBackgroundColor">@color/material_light_blue_100</item>
         <!-- Study Screen button drawables -->
-        <item name="showAnswerButtonBackground">@color/material_blue_700</item>
+        <item name="showAnswerButtonBackground">#1FB866</item>
         <item name="showAnswerColor">@color/material_blue_grey_700</item>
         <!-- Card Browser Colors -->
         <item name="cardBrowserDivider">#CCCCCC</item>
@@ -131,10 +131,10 @@
         <!-- Bottom navigation -->
         <item name="bottomNavIndicatorColor">?attr/appBarColor</item>
         <item name="showAnswerTextColor">@color/white</item>
-        <item name="againButtonTextColor">@color/white</item>
-        <item name="hardButtonTextColor">@color/white</item>
-        <item name="goodButtonTextColor">@color/white</item>
-        <item name="easyButtonTextColor">@color/white</item>
+        <item name="againButtonTextColor">#D93A2F</item>
+        <item name="hardButtonTextColor">#E08A0B</item>
+        <item name="goodButtonTextColor">#0A8DB0</item>
+        <item name="easyButtonTextColor">#4A9D1A</item>
         <item name="againIconColor">?againTextColor</item>
         <item name="hardIconColor">?hardTextColor</item>
         <item name="goodIconColor">?goodTextColor</item>
@@ -142,8 +142,8 @@
         <item name="answerButtonRef">@drawable/footer_button</item>
         <item name="answerButtonRippleRef">@drawable/footer_button_ripple</item>
         <!-- FAB -->
-        <item name="fabNormalColor">@color/material_light_blue_700</item>
-        <item name="fabPressedColor">@color/material_light_blue_900</item>
+        <item name="fabNormalColor">#1FB866</item>
+        <item name="fabPressedColor">#169A52</item>
         <item name="overflowAndPopupMenuIconColor">@color/overflow_menu_icon_color</item>
         <!-- Dialog styles -->
         <item name="dialogBackground">?attr/colorSurface</item>
