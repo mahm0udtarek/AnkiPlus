@@ -27,6 +27,7 @@ class QuizActivity : AppCompatActivity() {
     private data class Q(
         val question: String,
         val answer: String,
+        val did: Long = 0L,
     )
 
     private val accent = Color.parseColor("#0A9AD8")
@@ -122,17 +123,18 @@ class QuizActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val cards =
                 withCol {
-                    val ids = findCards(query).shuffled().take(80)
+                    val ids = findCards(query).shuffled().take(300)
                     ids.mapNotNull { id ->
                         try {
-                            val f = getNote(getCard(id).nid).fields
+                            val card = getCard(id)
+                            val f = getNote(card.nid).fields
                             val raw = f[0] + f[1]
                             if (Regex("(?i)<img|<object|<audio|<video|\\[sound|<embed|<br|<div|<p>|<ul|<ol|<table").containsMatchIn(raw)) {
                                 null
                             } else {
                                 val qq = plain(f[0])
                                 val aa = plain(f[1])
-                                if (qq.contains('\n') || aa.contains('\n') || qq.length > 120 || aa.length > 60 || aa.contains('\uFFFC')) null else Q(qq, aa)
+                                if (qq.contains('\n') || aa.contains('\n') || qq.length > 120 || aa.length > 60 || aa.contains('\uFFFC')) null else Q(qq, aa, card.did)
                             }
                         } catch (e: Exception) {
                             null
@@ -152,6 +154,13 @@ class QuizActivity : AppCompatActivity() {
         }
     }
 
+    private fun distractors(q: Q): List<String> {
+        val others = pool.filter { it.answer != q.answer }.shuffled()
+        val same = others.filter { it.did == q.did }.sortedBy { Math.abs(it.answer.length - q.answer.length) }
+        val rest = others.filter { it.did != q.did }.sortedBy { Math.abs(it.answer.length - q.answer.length) }
+        return (same + rest).take(3).map { it.answer }
+    }
+
     private fun show() {
         optionsBox.removeAllViews()
         if (index >= order.size) {
@@ -167,7 +176,7 @@ class QuizActivity : AppCompatActivity() {
         title.text = "Question ${index + 1} of ${order.size}"
         questionView.text = q.question
         resultView.text = ""
-        val options = (pool.filter { it.answer != q.answer }.shuffled().take(3).map { it.answer } + q.answer).shuffled()
+        val options = (distractors(q) + q.answer).shuffled()
         options.forEach { opt ->
             val b = button(opt, false) { }
             b.setOnClickListener {
