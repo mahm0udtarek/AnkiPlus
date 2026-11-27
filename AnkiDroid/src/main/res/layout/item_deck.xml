@@ -12,6 +12,10 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="3dp"
     android:paddingStart="@dimen/deck_picker_left_padding"
     android:paddingEnd="@dimen/deck_picker_right_padding"
     tools:background="@android:color/holo_orange_light">
@@ -48,7 +52,7 @@
             android:maxLines="2"
             android:ellipsize="end"
             android:textColor="?android:textColorPrimary"
-            android:textSize="20sp"
+            android:textSize="17sp"
             android:textStyle="bold"
             tools:text="Deck name" />
     </LinearLayout>
