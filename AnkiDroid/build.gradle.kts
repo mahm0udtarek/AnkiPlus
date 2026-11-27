@@ -224,8 +224,8 @@ android {
             isTestCoverageEnabled = project.isCoverageEnabled()
 
             // make the icon red if in debug mode
-            resValue("color", "anki_foreground_icon_color_0", "#FFFF0000")
-            resValue("color", "anki_foreground_icon_color_1", "#FFFF0000")
+            resValue("color", "anki_foreground_icon_color_0", "#FF1FB866")
+            resValue("color", "anki_foreground_icon_color_1", "#FF0A9AD8")
         }
         named("release") {
             isTestCoverageEnabled = testReleaseBuild
