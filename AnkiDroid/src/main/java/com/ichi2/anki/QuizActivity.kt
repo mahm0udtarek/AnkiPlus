@@ -126,7 +126,14 @@ class QuizActivity : AppCompatActivity() {
                     ids.mapNotNull { id ->
                         try {
                             val f = getNote(getCard(id).nid).fields
-                            Q(plain(f[0]), plain(f[1]))
+                            val raw = f[0] + f[1]
+                            if (Regex("(?i)<img|<object|<audio|<video|\\[sound|<embed|<br|<div|<p>|<ul|<ol|<table").containsMatchIn(raw)) {
+                                null
+                            } else {
+                                val qq = plain(f[0])
+                                val aa = plain(f[1])
+                                if (qq.contains('\n') || aa.contains('\n') || qq.length > 120 || aa.length > 60 || aa.contains('\uFFFC')) null else Q(qq, aa)
+                            }
                         } catch (e: Exception) {
                             null
                         }
