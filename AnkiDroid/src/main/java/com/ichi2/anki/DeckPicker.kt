@@ -877,10 +877,11 @@ open class DeckPicker :
 
         fun onStudiedTodayChanged(studiedToday: String) {
             deckPickerBinding.reviewSummaryTextView.text = studiedToday
-            val studiedCount = Regex("\\d+").find(studiedToday)?.value?.toIntOrNull() ?: 0
+            val studiedCount = Regex("\\p{Nd}+").find(studiedToday)?.value?.map { Character.digit(it, 10) }?.joinToString("")?.toIntOrNull() ?: 0
             val streakPrefs = this@DeckPicker.getSharedPreferences("ankiplus_streak", android.content.Context.MODE_PRIVATE)
             val nowMs = System.currentTimeMillis()
-            val todayDay = (nowMs + java.util.TimeZone.getDefault().getOffset(nowMs)) / 86_400_000L
+            // shift by 4h so the streak day matches Anki's default 4 AM rollover
+            val todayDay = (nowMs + java.util.TimeZone.getDefault().getOffset(nowMs) - 4 * 3_600_000L) / 86_400_000L
             val lastDay = streakPrefs.getLong("last_day", -1L)
             var streakDays = streakPrefs.getInt("streak", 0)
             if (studiedCount > 0 && lastDay != todayDay) {
@@ -901,9 +902,9 @@ open class DeckPicker :
                     .setTitle("Daily goal (cards)")
                     .setView(input)
                     .setPositiveButton("Save") { _, _ ->
-                        val v = input.text.toString().toIntOrNull()
+                        val v = input.text.toString().map { Character.digit(it, 10) }.filter { it >= 0 }.joinToString("").toIntOrNull()
                         if (v != null && v > 0) {
-                            streakPrefs.edit().putInt("goal", v).apply()
+                            streakPrefs.edit().putInt("goal", v.coerceAtMost(9999)).apply()
                             onStudiedTodayChanged(studiedToday)
                         }
                     }
