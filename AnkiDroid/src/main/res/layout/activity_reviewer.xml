@@ -10,6 +10,7 @@
     <!-- Bring in each component from separate files as we have fullscreen versions of reviewer -->
     <RelativeLayout
         android:id="@+id/front_frame"
+        android:background="@color/ankiplus_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <!-- The container allows edge-to-edge padding without it being absorbed
