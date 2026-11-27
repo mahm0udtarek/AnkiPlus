@@ -891,6 +891,7 @@ open class DeckPicker :
             val streakLine = if (streakShown > 0) "Streak: $streakShown day" + (if (streakShown == 1) "" else "s") + "\n" else ""
             deckPickerBinding.goalHeaderText.text = streakLine + studiedToday
             deckPickerBinding.goalRing.setProgressCompat(minOf(100, studiedCount * 100 / 20), true)
+            deckPickerBinding.goalHeaderCard.setOnClickListener { startActivity(android.content.Intent(this@DeckPicker, QuizActivity::class.java)) }
         }
 
         fun onCollectionStatusChanged(isInInitialState: Boolean) {
