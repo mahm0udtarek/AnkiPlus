@@ -889,11 +889,10 @@ open class DeckPicker :
             }
             val streakShown = if (lastDay == todayDay || lastDay == todayDay - 1 || studiedCount > 0) streakDays else 0
             val streakLine = if (streakShown > 0) "Streak: $streakShown day" + (if (streakShown == 1) "" else "s") + "\n" else ""
-            deckPickerBinding.goalHeaderText.text = streakLine + studiedToday
             val goalCards = streakPrefs.getInt("goal", 20).coerceAtLeast(1)
-            deckPickerBinding.goalRing.setProgressCompat(minOf(100, studiedCount * 100 / goalCards), true)
-            deckPickerBinding.goalHeaderText.text = streakLine + "$studiedCount cards today"
-            deckPickerBinding.goalRingText.text = "$studiedCount/$goalCards"
+            deckPickerBinding.statGoalValue.text = goalCards.toString()
+            deckPickerBinding.statTodayValue.text = studiedCount.toString()
+            deckPickerBinding.statStreakValue.text = streakShown.toString()
             deckPickerBinding.goalHeaderCard.setOnLongClickListener {
                 val input = android.widget.EditText(this@DeckPicker)
                 input.inputType = android.text.InputType.TYPE_CLASS_NUMBER
@@ -912,7 +911,8 @@ open class DeckPicker :
                     .show()
                 true
             }
-            deckPickerBinding.goalHeaderCard.setOnClickListener { startActivity(android.content.Intent(this@DeckPicker, QuizActivity::class.java)) }
+            deckPickerBinding.quizButton.setOnClickListener { startActivity(android.content.Intent(this@DeckPicker, QuizActivity::class.java)) }
+            deckPickerBinding.startLearningButton.setOnClickListener { this@DeckPicker.openReviewer() }
         }
 
         fun onCollectionStatusChanged(isInInitialState: Boolean) {
