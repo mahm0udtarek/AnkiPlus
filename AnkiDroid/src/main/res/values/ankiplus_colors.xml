@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ankiplus_bg">#F2F6FC</color>
+    <color name="ankiplus_stat_blue">#0A9AD8</color>
+    <color name="ankiplus_stat_green">#2E9E4F</color>
+    <color name="ankiplus_stat_orange">#E0861A</color>
+</resources>
