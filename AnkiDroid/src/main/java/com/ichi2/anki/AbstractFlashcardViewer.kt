@@ -860,7 +860,7 @@ abstract class AbstractFlashcardViewer :
     private var swipeDragging = false
 
     private fun setSwipeStamps(dx: Float) {
-        val width = resources.displayMetrics.widthPixels.toFloat()
+        val width = (cardFrame?.width ?: resources.displayMetrics.widthPixels).toFloat().coerceAtLeast(1f)
         val strength = Math.min(1f, Math.abs(dx) / (width * 0.3f))
         val gotIt = findViewById<View>(R.id.stamp_got_it)
         val again = findViewById<View>(R.id.stamp_again)
@@ -873,7 +873,7 @@ abstract class AbstractFlashcardViewer :
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val frame = cardFrame ?: return super.dispatchTouchEvent(ev)
         if (swipeAnimating) return true
-        val width = resources.displayMetrics.widthPixels
+        val width = frame.width.coerceAtLeast(1)
         when (ev.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 swipeDownX = ev.rawX
@@ -888,7 +888,7 @@ abstract class AbstractFlashcardViewer :
             MotionEvent.ACTION_MOVE -> {
                 val dx = ev.rawX - swipeDownX
                 val dy = ev.rawY - swipeDownY
-                if (!swipeDragging && swipeStartedInCard && Math.abs(dx) > 48f && Math.abs(dx) > Math.abs(dy) * 1.5f) {
+                if (!swipeDragging && swipeStartedInCard && Math.abs(dx) > 16f * resources.displayMetrics.density && Math.abs(dx) > Math.abs(dy) * 1.5f) {
                     swipeDragging = true
                     val cancel = MotionEvent.obtain(ev)
                     cancel.action = MotionEvent.ACTION_CANCEL
@@ -912,7 +912,19 @@ abstract class AbstractFlashcardViewer :
                         val rating = if (dx < 0) Rating.AGAIN else Rating.GOOD
                         frame.animate().translationX(sign * width * 1.2f).rotation(sign * 24f).alpha(0f).setDuration(380)
                             .setInterpolator(android.view.animation.DecelerateInterpolator()).withEndAction {
-                                answerCard(rating)
+                                if (isFinishing || isDestroyed) {
+                                    swipeAnimating = false
+                                    return@withEndAction
+                                }
+                                try {
+                                    answerCard(rating)
+                                } catch (e: Exception) {
+                                    swipeAnimating = false
+                                    frame.translationX = 0f
+                                    frame.rotation = 0f
+                                    frame.alpha = 1f
+                                    throw e
+                                }
                                 frame.translationX = 0f
                                 frame.rotation = 0f
                                 frame.alpha = 0f
