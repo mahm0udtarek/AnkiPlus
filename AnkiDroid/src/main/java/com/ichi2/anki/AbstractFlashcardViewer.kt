@@ -853,6 +853,37 @@ abstract class AbstractFlashcardViewer :
         }
     }
 
+    private var swipeDownX = 0f
+    private var swipeDownY = 0f
+
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val frame = cardFrame
+        if (frame != null) {
+            if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+                swipeDownX = ev.rawX
+                swipeDownY = ev.rawY
+            } else if (ev.actionMasked == MotionEvent.ACTION_UP && displayAnswer) {
+                val dx = ev.rawX - swipeDownX
+                val dy = ev.rawY - swipeDownY
+                val width = resources.displayMetrics.widthPixels
+                val loc = IntArray(2)
+                frame.getLocationOnScreen(loc)
+                val startedInCard =
+                    swipeDownX >= loc[0] && swipeDownX <= loc[0] + frame.width &&
+                        swipeDownY >= loc[1] && swipeDownY <= loc[1] + frame.height
+                if (startedInCard && Math.abs(dx) > width * 0.25f && Math.abs(dx) > Math.abs(dy) * 2f) {
+                    val sign = if (dx < 0) -1f else 1f
+                    frame.animate().translationX(sign * width).alpha(0f).setDuration(160).withEndAction {
+                        frame.translationX = 0f
+                        frame.alpha = 1f
+                    }.start()
+                    answerCard(if (dx < 0) Rating.AGAIN else Rating.GOOD)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     open fun answerCard(rating: Rating) =
         preventSimultaneousExecutions(ANSWER_CARD) {
             launchCatchingTask {
