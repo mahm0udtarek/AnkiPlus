@@ -17,35 +17,40 @@
         <item name="colorSurfaceContainerHigh">#151515</item>
         <item name="colorSurfaceContainer">#040A0E</item>
         <item name="android:colorBackground">@color/black</item>
-        <item name="android:windowBackground">@color/black</item>
+        <item name="android:windowBackground">@color/ankiplus_bg</item>
         <item name="preferenceCategoryTitleTextColor">?attr/colorSecondary</item>
         <!-- Action bar styles -->
-        <item name="appBarColor">@color/black</item>
+        <item name="appBarColor">@color/ankiplus_bg</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="actionBarTextColor">@color/white</item>
+        <item name="againButtonBackground">#5A2B2B</item>
+        <item name="hardButtonBackground">#5A4420</item>
+        <item name="goodButtonBackground">#1F5A3A</item>
+        <item name="easyButtonBackground">#1F4A66</item>
+        <item name="colorControlNormal">#E6EDF5</item>
         <!-- Bottom navigation -->
         <item name="bottomNavActiveIconColor">@color/material_blue_500</item>
         <!-- Deck list colors -->
         <item name="selectedRowBackgroundColor">#1a1a1a</item>
         <item name="dynDeckColor">@color/material_light_blue_500</item>
         <!-- Count colors -->
-        <item name="newCountColor">@color/material_blue_600</item>
-        <item name="learnCountColor">@color/material_red_400</item>
-        <item name="reviewCountColor">@color/material_green_400</item>
+        <item name="newCountColor">#4FC3F7</item>
+        <item name="learnCountColor">#FF8A80</item>
+        <item name="reviewCountColor">#69F0AE</item>
         <item name="buryCountColor">@color/disabled_gray_dark</item>
-        <item name="zeroCountColor">#202020</item>
+        <item name="zeroCountColor">#6B7C93</item>
         <!-- Study Screen colors -->
         <item name="showAnswerButtonBackground">#0c1215</item>
         <item name="showAnswerColor">@color/black</item>
-        <item name="topBarColor">@color/black</item>
+        <item name="topBarColor">@color/ankiplus_bg</item>
         <item name="maxTimerColor">@color/material_red_300</item>
         <item name="showAnswerTextColor">@color/white</item>
-        <item name="againButtonTextColor">@color/material_red_400</item>
-        <item name="hardButtonTextColor">@color/white</item>
-        <item name="goodButtonTextColor">@color/material_green_400</item>
-        <item name="easyButtonTextColor">@color/material_blue_700</item>
+        <item name="againButtonTextColor">#FFB4AB</item>
+        <item name="hardButtonTextColor">#FFD9A0</item>
+        <item name="goodButtonTextColor">#A8F0C0</item>
+        <item name="easyButtonTextColor">#A5D8FF</item>
 
         <item name="colorSurfaceDim">#0C0C0C</item>
         <item name="colorSurfaceBright">#151515</item>
@@ -58,8 +63,8 @@
         <item name="goodBackgroundColor">#0e1310</item>
         <item name="easyBackgroundColor">#0c1317</item>
         <!-- Study Screen button drawables -->
-        <item name="answerButtonRef">@drawable/footer_button_all_black</item>
-        <item name="answerButtonRippleRef">@drawable/footer_button_all_black_ripple</item>
+        <item name="answerButtonRef">@drawable/ankiplus_answer_button_bg</item>
+        <item name="answerButtonRippleRef">@drawable/ankiplus_answer_button_bg</item>
         <!-- Card Browser Colors -->
         <item name="cardBrowserDivider">@color/white</item>
         <!-- Browser colors -->
