@@ -877,7 +877,19 @@ open class DeckPicker :
 
         fun onStudiedTodayChanged(studiedToday: String) {
             deckPickerBinding.reviewSummaryTextView.text = studiedToday
-            deckPickerBinding.goalHeaderText.text = studiedToday
+            val studiedCount = Regex("\\d+").find(studiedToday)?.value?.toIntOrNull() ?: 0
+            val streakPrefs = this@DeckPicker.getSharedPreferences("ankiplus_streak", android.content.Context.MODE_PRIVATE)
+            val nowMs = System.currentTimeMillis()
+            val todayDay = (nowMs + java.util.TimeZone.getDefault().getOffset(nowMs)) / 86_400_000L
+            val lastDay = streakPrefs.getLong("last_day", -1L)
+            var streakDays = streakPrefs.getInt("streak", 0)
+            if (studiedCount > 0 && lastDay != todayDay) {
+                streakDays = if (lastDay == todayDay - 1) streakDays + 1 else 1
+                streakPrefs.edit().putLong("last_day", todayDay).putInt("streak", streakDays).apply()
+            }
+            val streakShown = if (lastDay == todayDay || lastDay == todayDay - 1 || studiedCount > 0) streakDays else 0
+            val streakLine = if (streakShown > 0) "Streak: $streakShown day" + (if (streakShown == 1) "" else "s") + "\n" else ""
+            deckPickerBinding.goalHeaderText.text = streakLine + studiedToday
         }
 
         fun onCollectionStatusChanged(isInInitialState: Boolean) {
