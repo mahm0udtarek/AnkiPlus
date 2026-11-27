@@ -267,6 +267,11 @@
             </intent-filter>
         </activity-alias>
         <activity
+            android:name="com.ichi2.anki.QuizActivity"
+            android:label="Quiz"
+            android:exported="false" />
+
+        <activity
             android:name="com.ichi2.anki.CardBrowser"
             android:label="@string/card_browser"
             android:theme="@style/Theme.AnkiDroid.Launcher"
