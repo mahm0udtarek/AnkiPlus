@@ -115,7 +115,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.ichi2.anki"
+        applicationId = "com.ichi2.ankiplus"
         buildConfigField("String", "ACRA_URL", "\"https://ankidroid.org/acra/report\"")
         buildConfigField("String", "BACKEND_VERSION", "\"${libs.versions.ankiBackend.get()}\"")
         buildConfigField("Boolean", "ENABLE_LEAK_CANARY", "false")
@@ -123,7 +123,7 @@ android {
         buildConfigField("long", "BUILD_TIME", buildTimeMillis.get())
         // whether UI elements linking to external donation pages are shown ('play' hides them)
         buildConfigField("Boolean", "SHOW_DONATE_LINKS", "true")
-        resValue("string", "app_name", "AnkiDroid")
+        resValue("string", "app_name", "AnkiPlus")
 
         // The version number is of the form:
         // <major>.<minor>.<maintenance>[dev|alpha<build>|beta<build>|]
@@ -244,8 +244,8 @@ android {
                 resValue("string", "app_name", project.property("customName").toString())
             }
 
-            resValue("color", "anki_foreground_icon_color_0", "#FF29B6F6")
-            resValue("color", "anki_foreground_icon_color_1", "#FF0288D1")
+            resValue("color", "anki_foreground_icon_color_0", "#FF1FB866")
+            resValue("color", "anki_foreground_icon_color_1", "#FF0A9AD8")
         }
 
         create("benchmark") {
