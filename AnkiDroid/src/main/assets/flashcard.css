@@ -28,11 +28,23 @@ video {
 
 body.night_mode {
   color: white;
-  background-color: black;
+  background-color: transparent;
 }
 
 body.ankidroid_dark_mode {
-  background-color: #303030;
+  background-color: transparent;
+}
+
+.card,
+.card div,
+.card p,
+.card li {
+  text-align: start !important;
+  line-height: 1.45;
+}
+
+#content {
+  padding-bottom: 16px;
 }
 
 #content {
