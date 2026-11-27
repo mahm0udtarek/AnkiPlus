@@ -877,6 +877,7 @@ open class DeckPicker :
 
         fun onStudiedTodayChanged(studiedToday: String) {
             deckPickerBinding.reviewSummaryTextView.text = studiedToday
+            deckPickerBinding.goalHeaderText.text = studiedToday
         }
 
         fun onCollectionStatusChanged(isInInitialState: Boolean) {
